@@ -17,7 +17,7 @@ IMG_HEIGHT = 256
 IMG_WIDTH = 256
 
 model = None
-predicts = []
+predicts = []         # each prediction is a dictionary containing 'filename' and 'image'
 input_path = None
 output_path = './exports'
 
@@ -158,19 +158,28 @@ class Aplication():
         if(path_type == 'input'):
             input_path = path
             Label(cls.frame, text=path).grid(row=1, column=2, padx=5, pady=5)
-
+        """
         if(path_type == 'output'):
             output_path = path
             Label(cls.frame, text=path).grid(row=2, column=2, padx=5, pady=5)
+        """
 
     def predict(cls):
+        # from tensorflow.keras.preprocessing.image import array_to_img
         global model, input_path, predicts
         acceptable_image_formats = [".jpg", ".jpeg", ".png", ".bmp", ".bif"]
         # if it is an only file
         if os.path.isfile(input_path):
             print('Predicting: ', input_path)
             prediction = None
-            # prediction = model.predict(get_image(input_path))
+            # prediction_array = model.predict(get_image(input_path))
+            # prediction = array_to_img(prediction_array)
+            # display the prediction
+            canvas_for_image = Canvas(cls.frame, height=200, width=200, )\
+                                    .grid(row=2, column=2, sticky='nesw', padx=0, pady=0)
+            # canvas_for_image.image = ImageTk.PhotoImage(prediction.resize((200, 200), Image.ANTIALIAS))
+            # canvas_for_image.create_image(0, 0, image=canvas_for_image.image, anchor='nw')
+
             predicts.append({'filename': input_path.split('/')[-1], 'image': prediction})
 
         # if it is a directory containing multiple files
@@ -218,5 +227,4 @@ def main():
     return 0
 
 if __name__ == '__main__':
-    #
     main()
