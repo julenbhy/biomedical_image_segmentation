@@ -189,7 +189,6 @@ class Aplication():
         from tensorflow.keras.preprocessing.image import save_img
         global predicts, output_path
         cls.set_dir_path(title='Select output directory', path_type='output')
-        print('Exporting: ', output_path)
         for img in predicts:
             print('Exporting: '+output_path+img['filename'])
             # image = array_to_img(img)
@@ -219,4 +218,5 @@ def main():
     return 0
 
 if __name__ == '__main__':
+    #
     main()
