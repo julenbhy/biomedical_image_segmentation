@@ -10,7 +10,7 @@ The aim of the CNN is to perform image segmentation of input colon adenocarcinom
 ```Julen Bohoyo Bengoetxea``` email: julen.bohoyo@estudiants.urv.cat
 
 
-## Segmentation_training.ipynb:
+## [Segmentation_training.ipynb:](https://github.com/julenbhy/biomedical_segmentation/blob/master/segmentation_training.ipynb)
 The CNN construction and training program.
 
 Requieres a DB with the following format:
@@ -52,7 +52,7 @@ image examples:
 ```train_annotations:```
 <img width="200" alt="portfolio_view" src="https://user-images.githubusercontent.com/73544256/125761176-08f5cc38-4ce6-45e7-81f8-d28760b90458.jpg">
 
-## application.py:
+## [application.py:](https://github.com/julenbhy/biomedical_segmentation/blob/master/application.py)
 The user application for image segmentation inference.
 
 ## Requirements:
