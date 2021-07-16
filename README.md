@@ -54,3 +54,6 @@ image examples:
 
 ## application.py:
 The user application for image segmentation inference.
+
+
+Packaches from requirements.txt must be installed. Notice that installing tensorflow package might not be enough for its correct behavior
