@@ -1,0 +1,13 @@
+# installing tensorflow package might not be enough for its correct behavior
+
+# needed for the training 
+jupyterlab==3.0.16
+tensorflow==2.5.0
+numpy==1.19.5
+matplotlib==3.4.2
+segmentations_models==1.0.1
+scipy==1.7.0
+
+# needed for the inference
+Pillow==8.3.1
+tk==0.1.0
