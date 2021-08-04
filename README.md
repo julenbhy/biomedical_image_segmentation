@@ -15,8 +15,6 @@ The CNN construction and training program.
 
 Requieres a DB with the following format:
 
-The directory structure is already created at this project so that only the images have to be copied
-
     .
     ├── ...
     ├── database              # database root directory
@@ -32,6 +30,8 @@ The directory structure is already created at this project so that only the imag
     │   │   │   ├── image2.png
     │   │   │   ├── image3.png
     │   │   │   ├── ...
+
+The directory structure is already created at this project so that only the images have to be copied
 
 Image examples:
 
