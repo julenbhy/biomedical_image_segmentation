@@ -36,7 +36,7 @@ The directory structure is already created at this project so that only the imag
 Image examples:
 
 ```train_images:```
-<img width="200" alt="portfolio_view" src="https://user-images.githubusercontent.com/73544256/125761207-d19726b8-632c-44a1-9711-95b337c81c23.jpg"> 
+<img width="200" alt="portfolio_view" src="https://github.com/julenbhy/biomedical_segmentation/blob/master/resources/example_image.jpg"> 
 ```train_annotations:```
 <img width="200" alt="portfolio_view" src="https://github.com/julenbhy/biomedical_segmentation/blob/master/resources/example_mask.png">
 
