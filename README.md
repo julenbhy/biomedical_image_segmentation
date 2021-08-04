@@ -10,7 +10,7 @@ The aim of the CNN is to perform image segmentation of input colon adenocarcinom
 ```Julen Bohoyo Bengoetxea``` email: julen.bohoyo@estudiants.urv.cat
 
 
-## [Segmentation_training.ipynb:](https://github.com/julenbhy/biomedical_segmentation/blob/master/tissue_segmentator.ipynb)
+## [biomedical_segmentation.ipynb:](https://github.com/julenbhy/biomedical_segmentation/blob/master/tissue_segmentator.ipynb)
 The CNN construction and training program.
 
 Requieres a DB with the following format:
