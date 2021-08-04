@@ -19,31 +19,19 @@ Requieres a DB with the following format:
     .
     ├── ...
     ├── Database_name               # database root directory
-    │   ├── train_images
-    │   │   ├── images
+    │   ├── images
+    │   │   ├── img
     │   │   │   ├── image1.jpg      # input image and annotation filenames must match in both direcotries.
     │   │   │   ├── image2.jpg
     │   │   │   ├── image3.jpg
     │   │   │   ├── ...
-    │   ├── train_annotations
-    │   │   ├── images
+    │   ├── masks
+    │   │   ├── img
     │   │   │   ├── image1.jpg
     │   │   │   ├── image2.jpg
     │   │   │   ├── image3.jpg
     │   │   │   ├── ...
-    │   ├── test_images
-    │   │   ├── images
-    │   │   │   ├── image1.jpg
-    │   │   │   ├── image2.jpg
-    │   │   │   ├── image3.jpg
-    │   │   │   ├── ...
-    │   ├── test_annotations
-    │   │   ├── images
-    │   │   │   ├── image1.jpg
-    │   │   │   ├── image2.jpg
-    │   │   │   ├── image3.jpg
-    │   │   │   ├── ...
-    └── ...
+
 
 image examples:
 
