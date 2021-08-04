@@ -10,7 +10,7 @@ The aim of the CNN is to perform image segmentation of input colon adenocarcinom
 ```Julen Bohoyo Bengoetxea``` email: julen.bohoyo@estudiants.urv.cat
 
 
-## [Segmentation_training.ipynb:](https://github.com/julenbhy/biomedical_segmentation/blob/master/segmentation_training.ipynb)
+## [Segmentation_training.ipynb:](https://github.com/julenbhy/biomedical_segmentation/blob/master/tissue_segmentator.ipynb)
 The CNN construction and training program.
 
 Requieres a DB with the following format:
@@ -18,7 +18,7 @@ Requieres a DB with the following format:
 
     .
     ├── ...
-    ├── Database_name               # database root directory
+    ├── Database              # database root directory
     │   ├── images
     │   │   ├── img
     │   │   │   ├── image1.jpg      # input image and annotation filenames must match in both direcotries.
@@ -31,7 +31,6 @@ Requieres a DB with the following format:
     │   │   │   ├── image2.jpg
     │   │   │   ├── image3.jpg
     │   │   │   ├── ...
-
 
 image examples:
 
