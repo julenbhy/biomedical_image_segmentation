@@ -39,6 +39,8 @@ image examples:
 ```train_annotations:```
 <img width="200" alt="portfolio_view" src="https://user-images.githubusercontent.com/73544256/125761176-08f5cc38-4ce6-45e7-81f8-d28760b90458.jpg">
 
+Masks must be single channel png images
+
 ## [application.py:](https://github.com/julenbhy/biomedical_segmentation/blob/master/application.py)
 The user application for image segmentation inference.
 
