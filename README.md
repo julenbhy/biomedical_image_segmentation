@@ -14,6 +14,7 @@ The aim of the CNN is to perform image segmentation of input colon adenocarcinom
 The CNN construction and training program.
 
 Requieres a DB with the following format:
+
 The directory structure is already created at this project so that only the images have to be copied
 
     .
