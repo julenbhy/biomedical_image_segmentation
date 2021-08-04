@@ -27,9 +27,9 @@ Requieres a DB with the following format:
     │   │   │   ├── ...
     │   ├── masks
     │   │   ├── img
-    │   │   │   ├── image1.jpg
-    │   │   │   ├── image2.jpg
-    │   │   │   ├── image3.jpg
+    │   │   │   ├── image1.png
+    │   │   │   ├── image2.png
+    │   │   │   ├── image3.png
     │   │   │   ├── ...
 
 image examples:
