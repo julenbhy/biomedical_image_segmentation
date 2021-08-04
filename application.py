@@ -6,7 +6,7 @@ from tkinter.ttk import *
 from PIL import Image
 from PIL import ImageTk
 import webbrowser
-# import tensorflow
+import tensorflow as tf
 
 
 FILETYPES = [("image", ".jpeg"),
@@ -220,8 +220,8 @@ class Aplication():
 def main():
     global model
     print('Loading model...')
-    # model = tf.keras.models.load_model('/')
-    # model.summary()
+    model = tf.keras.models.load_model('./resources/biomedical_segmentation_model.h5', compile=False)
+    model.summary()
 
     mi_app = Aplication()
     return 0
