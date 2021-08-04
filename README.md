@@ -35,9 +35,9 @@ The directory structure is already created at this project so that only the imag
 
 Image examples:
 
-```train_images:```
+```images:```
 <img width="200" alt="portfolio_view" src="https://github.com/julenbhy/biomedical_segmentation/blob/master/resources/example_image.jpg"> 
-```train_annotations:```
+```masks:```
 <img width="200" alt="portfolio_view" src="https://github.com/julenbhy/biomedical_segmentation/blob/master/resources/example_mask.png">
 
 Masks must be single channel png images
