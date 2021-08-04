@@ -32,7 +32,7 @@ Requieres a DB with the following format:
     │   │   │   ├── image3.png
     │   │   │   ├── ...
 
-image examples:
+Image examples:
 
 ```train_images:```
 <img width="200" alt="portfolio_view" src="https://user-images.githubusercontent.com/73544256/125761207-d19726b8-632c-44a1-9711-95b337c81c23.jpg"> 
