@@ -54,15 +54,15 @@ Contains tools for image handling and plotting:
 
 ```get_class_weights(path, img_size=512):```
 
-```plot_legend(classes, cmap='viridis', size=2):```
+```plot_legend(classes...):```
 
-```plot_mask(images, masks, num_plots=1, cmap='viridis', size=10):```
+```plot_mask(images, masks...):```
 
-```plot_prediction(images, masks, predictions, num_plots=1, cmap='viridis', size=10):```
+```plot_prediction(images, masks, predictions...):```
 
-```get_generator_from_directory(path, num_classes, mode, augmentation=True, val_split=0.2,img_size=256, batch_size=32, seed=123, backbone_preprocess=None):```
+```get_generator_from_directory(path, num_classes, mode, augmentation=True...):```
 
-```get_generator_from_list(images, masks, num_classes, mode, augmentation=True, val_split=0.2 img_size=256, batch_size=32, seed=123):```
+```get_generator_from_list(images, masks, num_classes, mode...):```
 
 ## [requirements:](https://github.com/julenbhy/biomedical_segmentation/blob/master/requirements.txt)
 Packaches from requirements.txt must be installed. Notice that installing tensorflow package might not be enough for its correct behavior.
