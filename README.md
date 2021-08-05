@@ -47,13 +47,20 @@ The user application for image segmentation inference.
 
 ## [segmentation_utils.py:](https://github.com/julenbhy/biomedical_segmentation/blob/master/segmentation_utils.py)
 Contains tools for image handling and plotting.
-```get_images:```
-```get_masks:```
-```get_class_weights:```
+    ```get_images:```
+
+    ```get_masks:```
+
+    ```get_class_weights:```
+
 ```plot_legend:```
+
 ```plot_mask:```
+
 ```plot_prediction:```
+
 ```get_generator_from_directory:```
+
 ```get_generator_from_list:```
 
 ## [requirements:](https://github.com/julenbhy/biomedical_segmentation/blob/master/requirements.txt)
