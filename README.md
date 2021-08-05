@@ -48,21 +48,23 @@ The user application for image segmentation inference.
 ## [segmentation_utils.py:](https://github.com/julenbhy/biomedical_segmentation/blob/master/segmentation_utils.py)
 Contains tools for image handling and plotting:
 
-```get_images:```
+```get_images(path, img_size=512):```
 
-```get_masks:```
+```get_masks(path, img_size=512):```
 
-```get_class_weights:```
+```get_class_weights(path, img_size=512):```
 
-```plot_legend:```
+```plot_legend(classes, cmap='viridis', size=2):```
 
-```plot_mask:```
+```plot_mask(images, masks, num_plots=1, cmap='viridis', size=10):```
 
-```plot_prediction:```
+```plot_prediction(images, masks, predictions, num_plots=1, cmap='viridis', size=10):```
 
-```get_generator_from_directory:```
+```get_generator_from_directory(path, num_classes, mode, augmentation=True, val_split=0.2, 
+                                 img_size=256, batch_size=32, seed=123, backbone_preprocess=None):```
 
-```get_generator_from_list:```
+```get_generator_from_list(images, masks, num_classes, mode, augmentation=True, val_split=0.2, 
+                                 img_size=256, batch_size=32, seed=123):```
 
 ## [requirements:](https://github.com/julenbhy/biomedical_segmentation/blob/master/requirements.txt)
 Packaches from requirements.txt must be installed. Notice that installing tensorflow package might not be enough for its correct behavior.
