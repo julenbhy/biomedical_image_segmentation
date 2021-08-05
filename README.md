@@ -46,7 +46,7 @@ Masks must be single channel png images.
 The user application for image segmentation inference.
 
 ## [segmentation_utils.py:](https://github.com/julenbhy/biomedical_segmentation/blob/master/segmentation_utils.py)
-Contains tools for image handling and plotting.
+Contains tools for image handling and plotting:
 
 ```get_images:```
 
