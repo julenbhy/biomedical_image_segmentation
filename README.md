@@ -31,7 +31,7 @@ Requieres a DB with the following format:
     │   │   │   ├── image3.png
     │   │   │   ├── ...
 
-The directory structure is already created at this project so that only the images have to be copied
+The directory structure is already created at this project so that only the images have to be copied.
 
 Image examples:
 
@@ -40,13 +40,13 @@ Image examples:
 ```masks:```
 <img width="200" alt="portfolio_view" src="https://github.com/julenbhy/biomedical_segmentation/blob/master/resources/example_mask.png">
 
-Masks must be single channel png images
+Masks must be single channel png images.
 
 ## [application.py:](https://github.com/julenbhy/biomedical_segmentation/blob/master/application.py)
 The user application for image segmentation inference.
 
 ## [segmentation_utils.py:](https://github.com/julenbhy/biomedical_segmentation/blob/master/segmentation_utils.py)
-Contains tools for image handling and plotting
+Contains tools for image handling and plotting.
 
 ## [requirements:](https://github.com/julenbhy/biomedical_segmentation/blob/master/requirements.txt)
-Packaches from requirements.txt must be installed. Notice that installing tensorflow package might not be enough for its correct behavior
+Packaches from requirements.txt must be installed. Notice that installing tensorflow package might not be enough for its correct behavior.
