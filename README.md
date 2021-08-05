@@ -45,5 +45,7 @@ Masks must be single channel png images
 ## [application.py:](https://github.com/julenbhy/biomedical_segmentation/blob/master/application.py)
 The user application for image segmentation inference.
 
-## Requirements:
+## [segmentation_utils.py:](https://github.com/julenbhy/biomedical_segmentation/blob/master/segmentation_utils.py)
+
+## [Requirements:](https://github.com/julenbhy/biomedical_segmentation/blob/master/requirements.txt)
 Packaches from requirements.txt must be installed. Notice that installing tensorflow package might not be enough for its correct behavior
