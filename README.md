@@ -20,7 +20,7 @@ Requieres a DB with the following format:
     ├── database              # database root directory
     │   ├── images
     │   │   ├── img
-    │   │   │   ├── image1.jpg      # input image and annotation filenames must match in both direcotries.
+    │   │   │   ├── image1.jpg   # input image and annotation filenames must match in both direcotries.
     │   │   │   ├── image2.jpg
     │   │   │   ├── image3.jpg
     │   │   │   ├── ...
