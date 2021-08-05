@@ -1,4 +1,4 @@
-# biomedical-segmentation
+# biomedical_segmentation
 CNN developed on Tensorflow and Keras for colon adenocarcinoma image segmentation.
 
 The aim of this CNN is to perform image segmentation of input colon adenocarcinoma based on QuPath annotations.
