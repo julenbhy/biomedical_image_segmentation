@@ -6,6 +6,9 @@ tensorflow==2.5.0
 numpy==1.19.5
 matplotlib==3.4.2
 segmentations_models==1.0.1
+opencv-python==4.5.3.56
+patchify==0.2.3
+sklearn
 scipy==1.7.0
 
 # needed for the inference
