@@ -1,2 +1,9 @@
 database/
+tile_database/
 wandb/
+.idea/
+.ipynb_checkpoints/
+
+*.iws
+*.xml
+*.iml

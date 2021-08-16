@@ -278,12 +278,13 @@ def get_generator_from_list(images, masks, mode, augmentation=True, val_split=0.
 #########           FLOW FROM DIRECTORY          #########
 ##########################################################
 
-def get_generator_from_directory(path, mode, preprocess_function, augmentation=True, 
+def get_generator_from_directory(img_path, mask_path, size, mode, preprocess_function, augmentation=True, 
                                  val_split=0.2, batch_size=32, seed=123):
     """
     Returns a generator for both input images and masks(hot encoded).
     dataset must be structured in "images" and "masks" directories
-    :path: path to the target dir containing images and masks directories
+    :img_path: path to the target dir containing images
+    :mask_path: path to the target dir containing masks
     :num_classes: the number of classes
     :mode: spicify whether is training or validation split
     :augmentation: boolean for performing data augmentation (default=True)
@@ -309,20 +310,22 @@ def get_generator_from_directory(path, mode, preprocess_function, augmentation=T
     # same arguments in order to transform images and masks equaly
     image_datagen = ImageDataGenerator(**data_gen_args)    
     
-    image_generator = image_datagen.flow_from_directory(directory=path+'/images',
-                                                        shuffle=True,
+    image_generator = image_datagen.flow_from_directory(img_path,
+                                                        target_size=(size, size),
                                                         subset=mode,  # train or validation
+                                                        batch_size=batch_size,
+                                                        shuffle=True,
                                                         class_mode=None,
-                                                        seed=seed,
-                                                        batch_size=batch_size)
+                                                        seed=seed)
 
-    mask_generator = image_datagen.flow_from_directory(directory=path+'/masks',
+    mask_generator = image_datagen.flow_from_directory(mask_path,
+                                                       target_size=(size, size),
+                                                       subset=mode,  # train or validation
+                                                       batch_size=batch_size,
                                                        color_mode='grayscale',
                                                        shuffle=True,
-                                                       subset=mode,  # train or validation
                                                        class_mode=None,
-                                                       seed=seed,
-                                                       batch_size=batch_size)
+                                                       seed=seed)
     
     generator = zip(image_generator, mask_generator)
     for (img, mask) in generator:
@@ -360,13 +363,16 @@ def get_image_tiles(path, tile_size, step=None, print_resize=False, dest_path=No
             percentage = 1/(len(paths)/(paths.index(img_path)+1))
             drawProgressBar(percentage, barLen = 50)
             
-            img = cv2.imread(img_path, 1) #1 for reading image as RGB (3 channel)
+            img = cv2.imread(img_path, 1) #1 for reading image as BGR (3 channel)
             
             # Cut each image to a size divisible by tile_size
+            original_width=img.shape[1] # useful for crop locations
+            original_height=img.shape[0] # useful for crop locations
             width = (img.shape[1]//tile_size)*tile_size # get nearest width divisible by tile_size
             height = (img.shape[0]//tile_size)*tile_size # get nearest height divisible by tile_size
             img = Image.fromarray(img)
-            img = img.crop((0 ,0, width, height))  #Crop from top left corner ((left, top, right, bottom))
+            #img = img.crop((0 ,0, width, height))  #Crop from top left corner ((left, top, right, bottom))
+            img = img.crop((original_width-width ,0, original_width, height))  #Crop from top right corner ((left, top, right, bottom))
             img = np.array(img)
             if (print_resize): print('Cropped image size:', img.shape)
             
@@ -375,7 +381,6 @@ def get_image_tiles(path, tile_size, step=None, print_resize=False, dest_path=No
             for i in range(patches_img.shape[0]):
                 for j in range(patches_img.shape[1]):
                     single_patch_img = patches_img[i,j,:,:]
-                    
                     single_patch_img = single_patch_img[0] #Drop the extra unecessary dimension that patchify adds.
                     image_list.append(single_patch_img)
                     
@@ -387,10 +392,10 @@ def get_image_tiles(path, tile_size, step=None, print_resize=False, dest_path=No
                             cv2.imwrite(dest_path+filename, single_patch_img)
 
     image_array = np.array(image_list)
-    print('\nGot an image array of shape', image_array.shape,image_array.dtype)
+    print('\nGot an image array of shape', image_array.shape, image_array.dtype)
     return(image_array)
 
-def get_mask_tiles(path, tile_size, step=None, print_size=False, dest_path=None):
+def get_mask_tiles(path, tile_size, step=None, print_resize=False, dest_path=None):
     from PIL import Image
     from patchify import patchify
     
@@ -408,12 +413,15 @@ def get_mask_tiles(path, tile_size, step=None, print_size=False, dest_path=None)
             mask = cv2.imread(mask_path, 0) #0 for reading image as greyscale (1 channel)
    
             # Cut each image to a size divisible by tile_size
+            original_width=mask.shape[1] # useful for crop locations
+            original_height=mask.shape[0] # useful for crop locations
             width = (mask.shape[1]//tile_size)*tile_size # get nearest width divisible by tile_size
             height = (mask.shape[0]//tile_size)*tile_size # get nearest height divisible by tile_size
             mask = Image.fromarray(mask)
-            mask = mask.crop((0 ,0, width, height))  #Crop from top left corner ((left, top, right, bottom))
+            #mask = mask.crop((0 ,0, width, height))  #Crop from top left corner ((left, top, right, bottom))
+            mask = mask.crop((original_width-width ,0, original_width, height))  #Crop from top right corner ((left, top, right, bottom))
             mask = np.array(mask)
-            if (print_size): print('Cropped mask size:', mask.shape)
+            if (print_resize): print('Cropped mask size:', mask.shape)
             
             # Extract patches from each mask
             patches_mask = patchify(mask, (tile_size, tile_size), step=step)  #Step=256 for 256 patches means no overlap
@@ -424,14 +432,41 @@ def get_mask_tiles(path, tile_size, step=None, print_size=False, dest_path=None)
                     
                     # Saving the mask
                     if dest_path is not None:
-                            filename = mask_path.rsplit( ".", 1 )[ 0 ]
-                            filename = filename.rsplit( "/")[ -1 ]
-                            filename = filename+' '+str(i)+'-'+str(j)+'.png'
+                            filename = mask_path.rsplit( ".", 1 )[ 0 ]          #remove extension
+                            filename = filename.rsplit( "/")[ -1 ]              #remove original path
+                            filename = filename+' '+str(i)+'-'+str(j)+'.png'    # add tile indexes
                             cv2.imwrite(dest_path+filename, single_patch_mask)
 
     mask_array = np.array(mask_list)
-    print('\nGot a mask array of shape', mask_array.shape,mask_array.dtype, 'with values', np.unique(mask_array))
+    print('\nGot a mask array of shape', mask_array.shape, mask_array.dtype, 'with values', np.unique(mask_array))
     return(mask_array)
+
+
+def get_usefull_images(IMG_DIR, MASK_DIR, USEFUL_IMG_DIR, USEFUL_MASK_DIR):
+    # needs to be sorted as linux doesn't list sorted
+    img_list = sorted(os.listdir(IMG_DIR))
+    msk_list = sorted(os.listdir(MASK_DIR))
+    useless=0  #Useless image counter
+    for img in range(len(img_list)):   #Using t1_list as all lists are of same size
+    
+        percentage = 1/(len(img_list)/(img+1))
+        drawProgressBar(percentage, barLen = 50)
+    
+        img_name=img_list[img]
+        mask_name = msk_list[img]
+        #print("Now preparing image and masks number: ", img) 
+        temp_image=cv2.imread(IMG_DIR+img_list[img], 1)
+        temp_mask=cv2.imread(MASK_DIR+msk_list[img], 0)
+        
+        val, counts = np.unique(temp_mask, return_counts=True)
+        if (1 - (counts[0]/counts.sum())) > 0.05:  #At least 5% useful area with labels that are not 0
+            cv2.imwrite(USEFUL_IMG_DIR+img_name, temp_image)
+            cv2.imwrite(USEFUL_MASK_DIR+mask_name, temp_mask); #print("Save Me")
+        else: useless +=1; #print("I am useless")   
+            
+    print("\nTotal useful images are: ", len(img_list)-useless)
+    print("Total useless images are: ", useless)
+    
 
     
 if __name__ == "__main__":
