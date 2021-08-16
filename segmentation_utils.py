@@ -19,11 +19,23 @@ import matplotlib.pyplot as plt
 
 def get_class_weights(path, img_size=256):
     """
-    get the class weights of the masks generated from the .png images of the specified directory
-    :path: the path to de directory
-    :img_size: the size in which the masks will be loaded (default=256)
-    :return: a lsit with the class weights
+    Get the class weights of the masks generated from the .png images of the specified directory
+
+    Parameters
+    ----------
+    path : string
+        Path to de directory.
+    img_size : int, optional
+        Size in which the masks will be loaded. (default is 256).
+
+    Returns
+    -------
+    class_weights : list
+        list containing the weights of each class.
+
     """
+    
+
     from sklearn.preprocessing import LabelEncoder
     from sklearn.utils import class_weight
     
@@ -54,9 +66,19 @@ def get_class_weights(path, img_size=256):
 def drawProgressBar(percent, barLen = 20):
     """
     Prints a progress bar
-    :percent: the completed percentage (0-1)
-    :barLen: the size of the bar
+
+    Parameters
+    ----------
+    percent : float
+        Completed percentage (0-1).
+    barLen : int, optional
+        Size of the bar. (default is 20).
+
+    Returns
+    -------
+    None.
     """
+ 
     import sys
     # percent float from 0 to 1. 
     sys.stdout.write("\r")
@@ -70,11 +92,22 @@ def drawProgressBar(percent, barLen = 20):
 
 def plot_legend(classes, cmap='viridis', size=2):
     """
-    plots legend of the colors using matplotlib.pyplot
-    :classes: a dict contaning the number and name of each class
-    :cmap: default=viridis
-    :size: defualt=2
+    Plots legend of the colors using matplotlib.pyplot
+
+    Parameters
+    ----------
+    classes : Dict
+        Dict contaning the number and name of each class.
+    cmap : string, optional
+        Color map to use in masks. (default is viridis).
+    size : int, optional
+        Plotting size. (default is 2).
+
+    Returns
+    -------
+    None.
     """
+
     x = []
     my_xticks = []
     for i in range(len(classes)):
@@ -90,13 +123,26 @@ def plot_legend(classes, cmap='viridis', size=2):
 
 def plot_mask(images, masks, num_plots=1, cmap='viridis', size=10):
     """
-    plots images and masks from lists using matplotlib.pyplot
-    :images: a list with the original images (3 channel)
-    :masks: a list with the original masks (1 channel)
-    :num_plots: the ammount of images to plot (default=1)
-    :cmap: the color map to use in masks (default=viridis)
-    :size: the plotting size (default=10)
+    Plots images and masks from lists using matplotlib.pyplot
+
+    Parameters
+    ----------
+    images : list
+        List with the original images (3 channel).
+    masks : list
+        List with the original masks (1 channel).
+    num_plots : int, optional
+        Ammount of images to plot. (default is 1).
+    cmap : string, optional
+        Color map to use in masks. (default is viridis).
+    size : int, optional
+        Plotting size. (default is 10).
+
+    Returns
+    -------
+    None.
     """
+
     # Place all pixel values for colour coherence
     num_classes = len(np.unique(masks))
     print('Masks modified for plotting', num_classes, 'classes')
@@ -121,15 +167,30 @@ def plot_mask(images, masks, num_plots=1, cmap='viridis', size=10):
       
 def plot_prediction(images, masks, predictions, num_plots=1, cmap='viridis', size=10, alpha=0.7):
     """
-    plots images, original masks, predicted masks and overlays from lists using matplotlib.pyplot
-    :images: a list with the original images (3 channel)
-    :masks: a list with the original masks (1 channel)
-    :predictions: a list with the predicted masks (1 channel)
-    :num_plots: the ammount of images to plot (default=1)
-    :cmap: the color map to use in masks (default=viridis)
-    :size: the plotting size (default=10)
-    :alpha: the transparency for the prediction over image (default=0.7)
+    Plots images, original masks, predicted masks and overlays from lists using matplotlib.pyplot
+
+    Parameters
+    ----------
+    images : list
+        List with the original images (3 channel).
+    masks : list
+        List with the original masks (1 channel).
+    predictions : list
+        List with the predicted masks (1 channel).
+    num_plots : int, optional
+        Ammount of images to plot. (default is 1).
+    cmap : string, optional
+        Color map to use in masks. (default is viridis).
+    size : int, optional
+        Plotting size. (default is 10).
+    alpha : float, optional
+        Transparency for the prediction over image. (default is 0.7).
+
+    Returns
+    -------
+    None.
     """
+
     # Place all pixel values for colour coherence
     num_classes = len(np.unique(masks))
     print('Masks modified for plotting', num_classes, 'classes')
@@ -172,104 +233,125 @@ def plot_prediction(images, masks, predictions, num_plots=1, cmap='viridis', siz
 #########         READING IMAGES TO LISTS        #########
 ##########################################################
 
-def get_images(path, size=256):
+def get_image_list(path, size=256):
     """
-    returns a list containing all the .jpg images of the specified directory resized to size*size
-    and preprocesses as /255.
-    :path: the path to de directory
-    :size: the size in which the images will be loaded (default=256)
-    :return: the list of images as float32 divided by 255
+    Returns a list containing all the .jpg images of the specified directory resized to size*size.
+
+    Parameters
+    ----------
+    path : string
+        Path to the directory containing the images.
+    size : int, optional
+        Size to load the images. (default is 256).
+
+    Returns
+    -------
+    image_list : list.
+        A list containing the images as np.arrays.
     """
-    train_images = []
+
+    image_list = []
     for directory_path in glob.glob(path):
         paths = sorted(glob.glob(os.path.join(directory_path, "*.jpg")))
         for img_path in paths:
             img = cv2.imread(img_path, 1)   #1 for readin 3 channel(rgb or bgr)
             img = cv2.resize(img, (size, size))
-            img = img.astype('float32')
-            img /= 255
-            train_images.append(img)
+            img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+            image_list.append(img)
             
     #Convert list to array for machine learning processing        
-    train_images = np.array(train_images)
-    return(train_images)
+    image_list = np.array(image_list)
+    return(image_list)
 
-def get_masks(path, size=256):
+def get_mask_list(path, size=256):
     """
-    returns a list containing all the masks generated from the .png images of the specified directory hot encoded
-    :path: the path to de directory
-    :size: the size in which the masks will be loaded (default=256)
-    :return: the list of hot encoded(categorical) masks (in num_classes channels)
-    :return: the number of detected classes
+    Returns a list containing all the masks generated from the .png images of the specified directory resized to size*size.
+
+    Parameters
+    ----------
+    path : string
+        Path to the directory containing the masks.
+    size : int, optional
+        Size to load the masks. (default is 256).
+
+    Returns
+    -------
+    mask_list : list.
+        A list containing the masks as np.arrays.
     """
-    from sklearn.preprocessing import LabelEncoder
-    from tf.keras.utils import to_categorical
     
     #Capture mask/label info as a list
-    train_masks = [] 
+    mask_list = [] 
     for directory_path in glob.glob(path):
         paths = sorted(glob.glob(os.path.join(directory_path, "*.png")))
         for mask_path in paths:
             mask = cv2.imread(mask_path, 0)   #1 for readin 3 channel(greyscale)
             mask = cv2.resize(mask, (size, size), interpolation = cv2.INTER_NEAREST)  #Otherwise ground truth changes due to interpolation
-            train_masks.append(mask)
+            mask_list.append(mask)
+            
     #Convert list to array for machine learning processing          
-    train_masks = np.array(train_masks)
-    
-    #Encode labels in case image is codified in colors
-    labelencoder = LabelEncoder()
-    n, h, w = train_masks.shape
-    train_masks_reshaped = train_masks.reshape(-1,1)
-    #transform colours into labels
-    train_masks_reshaped_encoded = labelencoder.fit_transform(train_masks_reshaped)
-    train_masks_encoded= train_masks_reshaped_encoded.reshape(n, h, w)
+    mask_list = np.array(mask_list)
     
     #detect number of classes in the masks
-    num_classes = len(np.unique(train_masks_encoded))
-    train_masks_cat = to_categorical(train_masks_encoded, num_classes=num_classes)
-    return(train_masks_cat, num_classes)
+    num_classes = len(np.unique(mask_list))
+    return(mask_list, num_classes)
 
 #NOT FINISHED, muest check augmentation and mode
-def get_generator_from_list(images, masks, mode, augmentation=True, val_split=0.2, img_size=256, seed=123):
-    
+def get_generator_from_list(images, masks, mode, preprocess_function, augmentation=True, 
+                            val_split=0.2, img_size=32, seed=123):
     """
-    Returns a generator for both input images and masks(hot encoded).
-    masks from msks list must be hot encoded(categorical)
-    :images: list containing the images
-    :masks: list containing the masks
-    :num_classes: the number of classes
-    :mode: spicify whether is training or validation split
-    :augmentation: boolean for performing data augmentation (default=True)
-    :val_split: the validation split (default=0.2)
-    :img_size:
-    :batch_size:
-    :seed:
-    :return: generator
-    """ 
+    Returns a generator for both input images and masks preprocessed.
+
+    Parameters
+    ----------
+    images : list
+        List containing the images(not preprocessed).
+    masks : list
+        List containing the masks (not preprocessed).
+    mode : string
+        Spicify whether is training or validation split.
+    preprocess_function : function
+        Function to preprocess data: def preprocess_data(img, mask): return(img, mask).
+    augmentation : boolean, optional
+        Poolean for performing data augmentation. (default is True).
+    val_split : float, optional
+        Perentage of the images for validation split. (default is 0.2).
+    batch_size : int, optional
+        Size of the loaded batches on each call to the generator. (default is 32).
+    seed : int, optional
+        seed fot the random transformations. (default is 123).
+
+    Yields
+    ------
+    img : 
+        Preprocessed image.
+    mask : 
+        Preprocessed mask.
+    """
+
     from keras.preprocessing.image import ImageDataGenerator
     
-    img_data_gen_args = dict(validation_split=val_split,
-                             horizontal_flip=True,
-                             vertical_flip=True,
-                             fill_mode='reflect'
-                             )
-    
-    mask_data_gen_args = dict(validation_split=val_split,
-                             horizontal_flip=True,
-                             vertical_flip=True,
-                             fill_mode='reflect'
-                             )
+    if(augmentation):
+        data_gen_args = dict(validation_split=val_split,
+                                 horizontal_flip=True,
+                                 vertical_flip=True,
+                                 fill_mode='reflect', #'constant','nearest','reflect','wrap'
+                                ) 
+   
+    else: data_gen_args = dict(validation_split=val_split,
+                              )
 
-    image_data_generator = ImageDataGenerator(**img_data_gen_args)
+    image_data_generator = ImageDataGenerator(**data_gen_args)
     image_data_generator.fit(images, augment=True, seed=seed)
     image_generator = image_data_generator.flow(images, seed=seed)
     
-    mask_data_generator = ImageDataGenerator(**mask_data_gen_args)
+    mask_data_generator = ImageDataGenerator(**data_gen_args)
     mask_data_generator.fit(masks, augment=True, seed=seed)
     mask_generator = mask_data_generator.flow(masks, seed=seed)
     
     generator = zip(image_generator, mask_generator)
     for (img, mask) in generator:
+        img, mask = preprocess_function(img, mask)
         yield (img, mask)
 
 
@@ -282,19 +364,38 @@ def get_generator_from_directory(img_path, mask_path, size, mode, preprocess_fun
                                  val_split=0.2, batch_size=32, seed=123):
     """
     Returns a generator for both input images and masks(hot encoded).
-    dataset must be structured in "images" and "masks" directories
-    :img_path: path to the target dir containing images
-    :mask_path: path to the target dir containing masks
-    :num_classes: the number of classes
-    :mode: spicify whether is training or validation split
-    :augmentation: boolean for performing data augmentation (default=True)
-    :val_split: the validation split (default=0.2)
-    :img_size:
-    :batch_size:
-    :seed:
-    :backbone_preprocess:
-    :return: generator
-    """ 
+    dataset must be structured in "images" and "masks" directories.
+
+    Parameters
+    ----------
+    img_path : string
+        Path to the target dir containing images.
+    mask_path : string
+        Path to the target dir containing masks.
+    size : int
+        Image loading size.
+    mode : string
+        Spicify whether is training or validation split.
+    preprocess_function : function
+        Function to preprocess data: def preprocess_data(img, mask): return(img, mask).
+    augmentation : boolean, optional
+        Poolean for performing data augmentation. (default is True).
+    val_split : float, optional
+        Perentage of the images for validation split. (default is 0.2).
+    batch_size : int, optional
+        Size of the loaded batches on each call to the generator. (default is 32).
+    seed : int, optional
+        seed fot the random transformations. (default is 123).
+
+    Yields
+    ------
+    img : 
+        Preprocessed image.
+    mask : 
+        Preprocessed mask.
+    """
+    
+
     from tensorflow.keras.preprocessing.image import ImageDataGenerator
     
     if(augmentation):
@@ -340,15 +441,28 @@ def get_generator_from_directory(img_path, mask_path, size, mode, preprocess_fun
   
 def get_image_tiles(path, tile_size, step=None, print_resize=False, dest_path=None):
     """
-    Returns a generator for both input images and masks(hot encoded).
-    dataset must be structured in "images" and "masks" directories
-    :path: 
-    :tile_size:
-    :step:
-    :print_resize:
-    :dest_path:
-    :return: generator
-    """ 
+    Generates image tiles from the masks on a given directory.
+
+    Parameters
+    ----------
+    path : string
+        Path to the original images dir.
+    tile_size : int
+        Size of the resulting tiles.
+    step : int, optional
+        Step pixel from tile to tile. (default is tile_size).
+    print_resize : boolean, optional
+        Option to print the cropped size of the image. (default is False).
+    dest_path : string, optional
+        Path to the destination dir for the tiles, not saved if None. (default is None).
+
+    Returns
+    -------
+    mask_array:
+        Array of tiled masks
+    """
+    
+
     from PIL import Image
     from patchify import patchify
     
@@ -396,6 +510,28 @@ def get_image_tiles(path, tile_size, step=None, print_resize=False, dest_path=No
     return(image_array)
 
 def get_mask_tiles(path, tile_size, step=None, print_resize=False, dest_path=None):
+    """
+    Generates mask tiles from the masks on a given directory.
+
+    Parameters
+    ----------
+    path : string
+        Path to the original masks dir.
+    tile_size : int
+        Size of the resulting tiles.
+    step : int, optional
+        Step pixel from tile to tile. (default is tile_size).
+    print_resize : boolean, optional
+        Option to print the cropped size of the mask. (default is False).
+    dest_path : string, optional
+        Path to the destination dir for the tiles, not saved if None. (default is None).
+
+    Returns
+    -------
+    mask_array:
+        Array of tiled masks
+    """
+    
     from PIL import Image
     from patchify import patchify
     
@@ -442,7 +578,29 @@ def get_mask_tiles(path, tile_size, step=None, print_resize=False, dest_path=Non
     return(mask_array)
 
 
-def get_usefull_images(IMG_DIR, MASK_DIR, USEFUL_IMG_DIR, USEFUL_MASK_DIR):
+def get_usefull_images(IMG_DIR, MASK_DIR, USEFUL_IMG_DIR, USEFUL_MASK_DIR, PERCENTAGE=0.05):
+    """
+    Read the image tiles from a given directory an saves in the new directory
+    only the ones with more than a percentage not labelled as 0(background).
+
+    Parameters
+    ----------
+    IMG_DIR : string
+        Path of the original image tiles directory.
+    MASK_DIR : string
+        Path of the original mask tiles directory.
+    USEFUL_IMG_DIR : string
+        Destination path of the filtered image tiles directory.
+    USEFUL_MASK_DIR : string
+        Destination path of the filtered mask tiles directory.
+    PERCENTAGE : float
+        The minimum percentage to accept an image. (default is 0.05) 
+
+    Returns
+    -------
+    None.
+    """
+
     # needs to be sorted as linux doesn't list sorted
     img_list = sorted(os.listdir(IMG_DIR))
     msk_list = sorted(os.listdir(MASK_DIR))
@@ -459,32 +617,27 @@ def get_usefull_images(IMG_DIR, MASK_DIR, USEFUL_IMG_DIR, USEFUL_MASK_DIR):
         temp_mask=cv2.imread(MASK_DIR+msk_list[img], 0)
         
         val, counts = np.unique(temp_mask, return_counts=True)
-        if (1 - (counts[0]/counts.sum())) > 0.05:  #At least 5% useful area with labels that are not 0
+        if (1 - (counts[0]/counts.sum())) > PERCENTAGE:  #At least 5% useful area with labels that are not 0
             cv2.imwrite(USEFUL_IMG_DIR+img_name, temp_image)
             cv2.imwrite(USEFUL_MASK_DIR+mask_name, temp_mask); #print("Save Me")
         else: useless +=1; #print("I am useless")   
             
     print("\nTotal useful images are: ", len(img_list)-useless)
     print("Total useless images are: ", useless)
+
     
 
     
 if __name__ == "__main__":
     
     CLASSES = {0 : 'background',
-           5 : 'Mucosa',
-           4 : 'Linfocitos',
-           1 : 'Submucosa',
-           3 : 'Muscular',
-           2 : 'Subserosa',
-          }
+               1 : 'Mucosa',
+               2 : 'Linfocitos',
+               3 : 'Submucosa',
+               4 : 'Muscular',
+               5 : 'Subserosa',
+              }
     
-    plot_legend(CLASSES)
-    
-    # get lists
-    images = get_images('database/images/img')
-    masks, num_classes = get_masks('database/masks/img')
-    
-    mask = cv2.imread('database/masks/img/10-1960 HEN.png', 0)
-    
-    
+
+
+
