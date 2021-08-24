@@ -1,23 +1,27 @@
 #!/usr/bin/env python3
-"""
-Author: Julen Bohoyo Bengoetxea
-        julen.bohoyo@estudiants.urv.cat
-        
-A set of tools for semantic image segmentations
 
-"""
+# =============================================================================
+# Author: Julen Bohoyo Bengoetxea
+# Email: julen.bohoyo@estudiants.urv.cat
+# =============================================================================
+""" Description: A set of tools for semantic image segmentations """
+# =============================================================================
+
 
 import os
 import glob
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from PIL import Image
+from patchify import patchify
 
 ##########################################################
 #########              GENERAL TOOLS             #########
 ##########################################################
 
-def get_class_weights(path, img_size=256):
+def get_class_weights(path, preprocess_function, img_size=256):
     """
     Get the class weights of the masks generated from the .png images of the specified directory
 
@@ -25,42 +29,38 @@ def get_class_weights(path, img_size=256):
     ----------
     path : string
         Path to de directory.
+    preprocess_function : function
+        Function to preprocess data in oder to get weight in the correct order: 
+        def preprocess_data(img, mask): return(img, mask).
     img_size : int, optional
-        Size in which the masks will be loaded. (default is 256).
+        image reading size. (default is 256).
 
     Returns
     -------
     class_weights : list
-        list containing the weights of each class.
-
+        List containing the weights of each class.
     """
-    
 
-    from sklearn.preprocessing import LabelEncoder
     from sklearn.utils import class_weight
-    
+
     #Capture mask/label info as a list
-    train_masks = [] 
+    masks = []
     for directory_path in glob.glob(path):
         paths = sorted(glob.glob(os.path.join(directory_path, "*.png")))
         for mask_path in paths:
-            mask = cv2.imread(mask_path, 0)     
-            mask = cv2.resize(mask, (img_size, img_size), interpolation = cv2.INTER_NEAREST)  #Otherwise ground truth changes due to interpolation
-            train_masks.append(mask)
-    #Convert list to array for machine learning processing          
-    train_masks = np.array(train_masks)
-    
-    #Encode labels from colours to numbers from 0 to num_classes-1
-    labelencoder = LabelEncoder()
-    n, h, w = train_masks.shape
-    train_masks_reshaped = train_masks.reshape(-1,1)
-    #transform colours into labels
-    train_masks_reshaped_encoded = labelencoder.fit_transform(train_masks_reshaped)
-    
-    class_weights = class_weight.compute_class_weight('balanced',
-                                                     np.unique(train_masks_reshaped_encoded),
-                                                     train_masks_reshaped_encoded)
-    return (class_weights)
+            mask = cv2.imread(mask_path, 0)
+            mask = cv2.resize(mask, (img_size, img_size), interpolation = cv2.INTER_NEAREST) #Otherwise ground truth changes due to interpolation
+            masks.append(mask)
+    # Convert list to array for machine learning processing
+    imgs = np.zeros(shape=(1,1))
+    masks = np.array(masks)
+
+    # Preprocess masks same way as in training in order to get the weight in the correct order
+    imgs, masks = preprocess_function(imgs, masks)
+    masks = np.argmax(masks, axis=3) # preprocess_function hot encodes the masks so must be reverted
+    masks = masks.reshape(-1) # Masks must be array of shape (num_samples,)
+    class_weights = class_weight.compute_class_weight('balanced', np.unique(masks), masks)
+    return class_weights
 
 
 def drawProgressBar(percent, barLen = 20):
@@ -78,13 +78,12 @@ def drawProgressBar(percent, barLen = 20):
     -------
     None.
     """
- 
+
     import sys
-    # percent float from 0 to 1. 
     sys.stdout.write("\r")
     sys.stdout.write("[{:<{}}] {:.0f}%".format("=" * int(barLen * percent), barLen, percent * 100))
     sys.stdout.flush()
-    
+
 
 ##########################################################
 #########              PLOTTING TOOLS            #########
@@ -154,7 +153,7 @@ def plot_mask(images, masks, num_plots=1, cmap='viridis', size=10):
     
     for i in range(num_plots):
         f = plt.figure(figsize = (size, size))
-        f.add_subplot(1,3, 1)
+        f.add_subplot(1,3,1)
         plt.axis('off')
         plt. title('Original image')
         plt.imshow(images[i])
@@ -168,7 +167,7 @@ def plot_mask(images, masks, num_plots=1, cmap='viridis', size=10):
 def plot_prediction(images, masks, predictions, num_plots=1, cmap='viridis', size=10, alpha=0.7):
     """
     Plots images, original masks, predicted masks and overlays from lists using matplotlib.pyplot
-
+    
     Parameters
     ----------
     images : list
@@ -298,7 +297,7 @@ def get_mask_list(path, size=256):
 
 #NOT FINISHED, muest check augmentation and mode
 def get_generator_from_list(images, masks, mode, preprocess_function, augmentation=True, 
-                            val_split=0.2, img_size=32, seed=123):
+                            val_split=0.2, batch_size=32, seed=123):
     """
     Returns a generator for both input images and masks preprocessed.
 
@@ -328,8 +327,6 @@ def get_generator_from_list(images, masks, mode, preprocess_function, augmentati
     mask : 
         Preprocessed mask.
     """
-
-    from keras.preprocessing.image import ImageDataGenerator
     
     if(augmentation):
         data_gen_args = dict(validation_split=val_split,
@@ -395,9 +392,6 @@ def get_generator_from_directory(img_path, mask_path, size, mode, preprocess_fun
         Preprocessed mask.
     """
     
-
-    from tensorflow.keras.preprocessing.image import ImageDataGenerator
-    
     if(augmentation):
         data_gen_args = dict(validation_split=val_split,
                              horizontal_flip=True,
@@ -461,10 +455,7 @@ def get_image_tiles(path, tile_size, step=None, print_resize=False, dest_path=No
     mask_array:
         Array of tiled masks
     """
-    
 
-    from PIL import Image
-    from patchify import patchify
     
     print('Reading images:')
     if(not step): step=tile_size
@@ -500,10 +491,10 @@ def get_image_tiles(path, tile_size, step=None, print_resize=False, dest_path=No
                     
                     # Saving the image
                     if dest_path is not None:
-                            filename = img_path.rsplit( ".", 1 )[ 0 ]           #remove extension
-                            filename = filename.rsplit( "/")[ -1 ]              #remove original path
-                            filename = filename+' '+str(i)+'-'+str(j)+'.jpg'    # add tile indexes
-                            cv2.imwrite(dest_path+filename, single_patch_img)
+                        filename = img_path.rsplit( ".", 1 )[ 0 ]           #remove extension
+                        filename = filename.rsplit( "/")[ -1 ]              #remove original path
+                        filename = filename+' '+str(i)+'-'+str(j)+'.jpg'    # add tile indexes
+                        cv2.imwrite(dest_path+filename, single_patch_img)
 
     image_array = np.array(image_list)
     print('\nGot an image array of shape', image_array.shape, image_array.dtype)
@@ -531,9 +522,6 @@ def get_mask_tiles(path, tile_size, step=None, print_resize=False, dest_path=Non
     mask_array:
         Array of tiled masks
     """
-    
-    from PIL import Image
-    from patchify import patchify
     
     print('Reading masks:')
     if(not step): step=tile_size
@@ -568,17 +556,17 @@ def get_mask_tiles(path, tile_size, step=None, print_resize=False, dest_path=Non
                     
                     # Saving the mask
                     if dest_path is not None:
-                            filename = mask_path.rsplit( ".", 1 )[ 0 ]          #remove extension
-                            filename = filename.rsplit( "/")[ -1 ]              #remove original path
-                            filename = filename+' '+str(i)+'-'+str(j)+'.png'    # add tile indexes
-                            cv2.imwrite(dest_path+filename, single_patch_mask)
+                        filename = mask_path.rsplit( ".", 1 )[ 0 ]          #remove extension
+                        filename = filename.rsplit( "/")[ -1 ]              #remove original path
+                        filename = filename+' '+str(i)+'-'+str(j)+'.png'    # add tile indexes
+                        cv2.imwrite(dest_path+filename, single_patch_mask)
 
     mask_array = np.array(mask_list)
     print('\nGot a mask array of shape', mask_array.shape, mask_array.dtype, 'with values', np.unique(mask_array))
     return(mask_array)
 
 
-def get_usefull_images(IMG_DIR, MASK_DIR, USEFUL_IMG_DIR, USEFUL_MASK_DIR, PERCENTAGE=0.05):
+def get_useful_images(IMG_DIR, MASK_DIR, USEFUL_IMG_DIR, USEFUL_MASK_DIR, PERCENTAGE=0.05):
     """
     Read the image tiles from a given directory an saves in the new directory
     only the ones with more than a percentage not labelled as 0(background).
@@ -605,7 +593,7 @@ def get_usefull_images(IMG_DIR, MASK_DIR, USEFUL_IMG_DIR, USEFUL_MASK_DIR, PERCE
     img_list = sorted(os.listdir(IMG_DIR))
     msk_list = sorted(os.listdir(MASK_DIR))
     useless=0  #Useless image counter
-    for img in range(len(img_list)):   #Using t1_list as all lists are of same size
+    for img in range(len(img_list)):
     
         percentage = 1/(len(img_list)/(img+1))
         drawProgressBar(percentage, barLen = 50)
@@ -623,21 +611,6 @@ def get_usefull_images(IMG_DIR, MASK_DIR, USEFUL_IMG_DIR, USEFUL_MASK_DIR, PERCE
         else: useless +=1; #print("I am useless")   
             
     print("\nTotal useful images are: ", len(img_list)-useless)
-    print("Total useless images are: ", useless)
-
-    
-
-    
-if __name__ == "__main__":
-    
-    CLASSES = {0 : 'background',
-               1 : 'Mucosa',
-               2 : 'Linfocitos',
-               3 : 'Submucosa',
-               4 : 'Muscular',
-               5 : 'Subserosa',
-              }
-    
-
+ 
 
 

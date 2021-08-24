@@ -1,5 +1,8 @@
 import os
+import sys
 import tkinter as tk
+import cv2
+import numpy as np
 from tkinter import *
 from tkinter import filedialog
 from tkinter.ttk import *
@@ -7,14 +10,15 @@ from PIL import Image
 from PIL import ImageTk
 import webbrowser
 import tensorflow as tf
-
+import segmentation_models as sm
+from sklearn.preprocessing import MinMaxScaler
+from smooth_tiled_predictions import predict_img_with_smooth_windowing
 
 FILETYPES = [("image", ".jpeg"),
-             ("image", ".png"),
              ("image", ".jpg"),
              ]
-IMG_HEIGHT = 256
-IMG_WIDTH = 256
+TILE_SIZE=256
+NUM_CLASSES=6
 
 model = None
 predicts = []         # each prediction is a dictionary containing 'filename' and 'image'
@@ -29,7 +33,7 @@ class Aplication():
         cls.window.title("Image Segmentation")
         cls.window.eval('tk::PlaceWindow . center')
         cls.window.iconphoto(True, tk.PhotoImage(file='resources/logo.png'))
-        # cls.window.geometry("600x250")
+        # cls.window.geometry("1200x1200")
         # cls.window.columnconfigure(0, weight=1)
         # cls.window.rowconfigure(0, weight=1)
         cls.frame = None
@@ -166,19 +170,55 @@ class Aplication():
 
     def predict(cls):
         # from tensorflow.keras.preprocessing.image import array_to_img
-        global model, input_path, predicts
-        acceptable_image_formats = [".jpg", ".jpeg", ".png", ".bmp", ".bif"]
+        global model,  TILE_SIZE, input_path, predicts
+        acceptable_image_formats = [".jpg"]
+        
         # if it is an only file
         if os.path.isfile(input_path):
             print('Predicting: ', input_path)
-            prediction = None
-            # prediction_array = model.predict(get_image(input_path))
-            # prediction = array_to_img(prediction_array)
+            
+            # img = get_image(input_path)
+            img = cv2.imread(input_path)
+            img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+            scaler = MinMaxScaler()
+            BACKBONE = 'resnet34'
+            preprocess_input = sm.get_preprocessing(BACKBONE)
+            img = scaler.fit_transform(img.reshape(-1, img.shape[-1])).reshape(img.shape)
+            img = preprocess_input(img)  #Preprocess based on the pretrained backbone...
+            
+            # Use the algorithm. The `pred_func` is passed and will process all the image 8-fold by tiling small patches with overlap, called once with all those image as a batch outer dimension.
+            # Note that model.predict(...) accepts a 4D tensor of shape (batch, x, y, nb_channels), such as a Keras model.
+            smooth_prediction = predict_img_with_smooth_windowing(
+                img,
+                window_size=TILE_SIZE,
+                subdivisions=2,  # Minimal amount of overlap for windowing. Must be an even number.
+                nb_classes=NUM_CLASSES,
+                pred_func=(
+                    lambda img_batch_subdiv: model.predict((img_batch_subdiv))
+                )
+            )
+            prediction = np.argmax(smooth_prediction, axis=2)  #hot encoded to 1 channel
+            
+            import matplotlib.pyplot as plt
+            f = plt.figure(figsize = (20, 20))
+            f.add_subplot(1,2,1)
+            plt.axis('off')
+            plt. title('Original image')
+            plt.imshow(img)
+            f.add_subplot(1,2,2)
+            plt.axis('off')
+            plt. title('Prediction')
+            plt.imshow(prediction)
+            plt.show
+
+            prediction = Image.fromarray((prediction * 255).astype(np.uint8))
+            prediction.show()
+            
             # display the prediction
-            canvas_for_image = Canvas(cls.frame, height=200, width=200, )\
-                                    .grid(row=2, column=2, sticky='nesw', padx=0, pady=0)
-            # canvas_for_image.image = ImageTk.PhotoImage(prediction.resize((200, 200), Image.ANTIALIAS))
-            # canvas_for_image.create_image(0, 0, image=canvas_for_image.image, anchor='nw')
+            canvas_for_image = Canvas(cls.frame, height=200, width=200, )
+            canvas_for_image.grid(row=2, column=2, sticky='nesw', padx=0, pady=0)
+            canvas_for_image.image = ImageTk.PhotoImage(prediction.resize((200, 200), Image.ANTIALIAS))
+            canvas_for_image.create_image(0, 0, image=canvas_for_image.image, anchor='nw')
 
             predicts.append({'filename': input_path.split('/')[-1], 'image': prediction})
 
@@ -200,28 +240,30 @@ class Aplication():
         cls.set_dir_path(title='Select output directory', path_type='output')
         for img in predicts:
             print('Exporting: '+output_path+img['filename'])
-            # image = array_to_img(img)
+            # np to img
             # save_img(img['filename'], img['image'])
 
     def get_image(cls, path):
-        from tensorflow.keras.preprocessing.image import load_img, img_to_array
-        global IMG_HEIGHT, IMG_WIDTH
-
-        img = load_img(path, target_size=(IMG_HEIGHT, IMG_WIDTH))
-        # convert to array
-        img = img_to_array(img)
-        # reshape into a single sample with 3 channels
-        img = img.reshape(IMG_HEIGHT, IMG_WIDTH, 3)
-        # prepare pixel data
-        img = img.astype('float32')
-        img = img / 255.0
+        img = cv2.imread(input_path)
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        scaler = MinMaxScaler()
+        BACKBONE = 'resnet34'
+        preprocess_input = sm.get_preprocessing(BACKBONE)
+        img = scaler.fit_transform(img.reshape(-1, img.shape[-1])).reshape(img.shape)
+        img = preprocess_input(img)  #Preprocess based on the pretrained backbone...
         return img
 
 def main():
     global model
+    model_name = 'tiled_unet_d40_t256.hdf5'
+    
     print('Loading model...')
-    model = tf.keras.models.load_model('./resources/biomedical_segmentation_model.h5', compile=False)
-    model.summary()
+    try:
+        model = tf.keras.models.load_model('./resources/'+model_name, compile=False)
+        #model.summary()
+    except:
+        sys.exit('ERROR: Model '+model_name+' not found')
+
 
     mi_app = Aplication()
     return 0
