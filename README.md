@@ -35,15 +35,15 @@ The directory structure is already created at this project so that only the imag
 Image examples:
 
 ```images:```
-<img width="200" alt="portfolio_view" src="https://github.com/julenbhy/biomedical_segmentation/blob/master/resources/example_image.jpg"> 
+<img width="200" alt="portfolio_view" src="https://github.com/julenbhy/biomedical_segmentation/blob/master/tissue_segmentation/database/images/img/10-1960%20HEN.jpg"> 
 ```masks:```
-<img width="200" alt="portfolio_view" src="https://github.com/julenbhy/biomedical_segmentation/blob/master/resources/example_mask.png">
+<img width="200" alt="portfolio_view" src="https://github.com/julenbhy/biomedical_segmentation/blob/master/tissue_segmentation/database/masks/img/10-1960%20HEN.png">
 
 ```Pixel values:``` 0 = backgroud, 225 = mucosa, 178 = linfocitos, 96 = submucosa, 131 = muscular, 105 = subserosa
 
 Masks must be single channel png images.
 
-## [tile_database:](https://github.com/julenbhy/biomedical_segmentation/tree/master/tissue_segmentation/tile_database)
+## [tile_database:]
 The database for containing the training images divided in tiles generated with tile_generation.py.
 
     .
