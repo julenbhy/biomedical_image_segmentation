@@ -3,6 +3,7 @@ tissue_segmentation/tile_database/
 cancer_segmentation/database/
 cancer_segmentation/tile_database/
 wandb/
+__pycache__/
 .idea/
 .ipynb_checkpoints/
 
