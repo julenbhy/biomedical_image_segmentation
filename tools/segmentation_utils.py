@@ -120,7 +120,7 @@ def plot_legend(classes, cmap='viridis', size=2):
     x = np.reshape(x,(1,len(classes))).T
     plt.imshow(x, cmap=cmap)
 
-def plot_mask(images, masks, num_plots=1, cmap='viridis', size=10):
+def plot_mask(images, masks, num_classes, num_plots=1, cmap='viridis', size=10):
     """
     Plots images and masks from lists using matplotlib.pyplot
 
@@ -130,6 +130,8 @@ def plot_mask(images, masks, num_plots=1, cmap='viridis', size=10):
         List with the original images (3 channel).
     masks : list
         List with the original masks (1 channel).
+    num_classes : int
+        Number of classes to plot
     num_plots : int, optional
         Ammount of images to plot. (default is 1).
     cmap : string, optional
@@ -143,7 +145,6 @@ def plot_mask(images, masks, num_plots=1, cmap='viridis', size=10):
     """
 
     # Place all pixel values for colour coherence
-    num_classes = len(np.unique(masks))
     print('Masks modified for plotting', num_classes, 'classes')
     for i in range(num_plots):
         mask=masks[i]
@@ -164,7 +165,7 @@ def plot_mask(images, masks, num_plots=1, cmap='viridis', size=10):
     plt.show(block=True)
     plt.show
       
-def plot_prediction(images, masks, predictions, num_plots=1, cmap='viridis', size=10, alpha=0.7):
+def plot_prediction(images, masks, predictions, num_classes, num_plots=1, cmap='viridis', size=10, alpha=0.7):
     """
     Plots images, original masks, predicted masks and overlays from lists using matplotlib.pyplot
     
@@ -176,6 +177,8 @@ def plot_prediction(images, masks, predictions, num_plots=1, cmap='viridis', siz
         List with the original masks (1 channel).
     predictions : list
         List with the predicted masks (1 channel).
+    num_classes : int
+        Number of classes to plot
     num_plots : int, optional
         Ammount of images to plot. (default is 1).
     cmap : string, optional
@@ -191,7 +194,6 @@ def plot_prediction(images, masks, predictions, num_plots=1, cmap='viridis', siz
     """
 
     # Place all pixel values for colour coherence
-    num_classes = len(np.unique(masks))
     print('Masks modified for plotting', num_classes, 'classes')
     for i in range(num_plots):
         mask=masks[i]
