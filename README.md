@@ -10,8 +10,9 @@ The aim of this CNN is to perform image segmentation of input colon adenocarcino
 ```Julen Bohoyo Bengoetxea``` email: julen.bohoyo@estudiants.urv.cat
 
 
-## [database:](https://github.com/julenbhy/biomedical_segmentation/blob/master/database)
-The database for containing the training images, Requieres the following format:
+## [database:](https://github.com/julenbhy/biomedical_segmentation/tree/master/tissue_segmentation/database)
+The database for containing the training images. Requieres the following format:
+There are two databases, one in the tissue_segmentation and other for tumor_segmentation.
 
     .
     ├── ...
@@ -34,15 +35,15 @@ The directory structure is already created at this project so that only the imag
 Image examples:
 
 ```images:```
-<img width="200" alt="portfolio_view" src="https://github.com/julenbhy/biomedical_segmentation/blob/master/resources/example_image.jpg"> 
+<img width="200" alt="portfolio_view" src="https://github.com/julenbhy/biomedical_segmentation/blob/master/tissue_segmentation/database/images/img/10-1960%20HEN.jpg"> 
 ```masks:```
-<img width="200" alt="portfolio_view" src="https://github.com/julenbhy/biomedical_segmentation/blob/master/resources/example_mask.png">
+<img width="200" alt="portfolio_view" src="https://github.com/julenbhy/biomedical_segmentation/blob/master/tissue_segmentation/database/masks/img/10-1960%20HEN.png">
 
 ```Pixel values:``` 0 = backgroud, 225 = mucosa, 178 = linfocitos, 96 = submucosa, 131 = muscular, 105 = subserosa
 
 Masks must be single channel png images.
 
-## [tile_database:](https://github.com/julenbhy/biomedical_segmentation/blob/master/tile_database)
+## [tile_database:]
 The database for containing the training images divided in tiles generated with tile_generation.py.
 
     .
@@ -65,20 +66,20 @@ The database for containing the training images divided in tiles generated with 
 
 
 
-## [tiled_tissue_segmentator.ipynb:](https://github.com/julenbhy/biomedical_segmentation/blob/master/tiled_tissue_segmentator.ipynb)
+## [tiled_tissue_segmentator.ipynb:](https://github.com/julenbhy/biomedical_segmentation/tree/master/tissue_segmentation/tiled_tissue_segmentator.ipynb)
 Training program for the tissue segmentator based on image tiles.
 
-## [compress_tissue_segmentator.ipynb:](https://github.com/julenbhy/biomedical_segmentation/blob/master/compress_tissue_segmentator.ipynb)
+## [tiled_tumor_segmentator.ipynb:](https://github.com/julenbhy/biomedical_segmentation/tree/master/tumor_segmentation/compress_tumor_segmentator.ipynb)
 Training program for the tissue segmentator based on original images compressed.
 
-## [application.py:](https://github.com/julenbhy/biomedical_segmentation/blob/master/application.py)
+## [application.py:](https://github.com/julenbhy/biomedical_segmentation/tree/master/inference/application.py)
 The user application for image segmentation inference.
 
-## [tile_generation.py:](https://github.com/julenbhy/biomedical_segmentation/blob/master/tile_generation.py)
+## [tile_generation.py:](https://github.com/julenbhy/biomedical_segmentation/tree/master/tools/tile_generation.py)
 Program for generating multiple resolution tiles from the images and masks at the dataset, 
 also creates "useful" directories containing tiles with more than a certain % of non background.
 
-## [segmentation_utils.py:](https://github.com/julenbhy/biomedical_segmentation/blob/master/segmentation_utils.py)
+## [segmentation_utils.py:](https://github.com/julenbhy/biomedical_segmentation/tree/master/tools/segmentation_utils.py)
 Contains tools for image handling, plotting and tile generation:
 
 * plot_legend(classes, cmap='viridis', size=2):
