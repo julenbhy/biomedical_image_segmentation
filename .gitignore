@@ -1,9 +1,12 @@
-database/
-tile_database/
+tissue_segmentation/database/
+tissue_segmentation/tile_database/
+cancer_segmentation/database/
+cancer_segmentation/tile_database/
 wandb/
 .idea/
 .ipynb_checkpoints/
 
+*.hdf5
 *.iws
 *.xml
 *.iml

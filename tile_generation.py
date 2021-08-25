@@ -16,9 +16,9 @@ if __name__ == "__main__":
     
     start_clock, start_time = time.clock(), time.time()
 
-    ORIGINAL_PATH ='../../DB/database_d40/'     # Path to the original images
-    TILE_PATH = '../../DB/tile_database_d40/'   # Destination path for tiles
-    TILE_SIZES = [256, 128, 64]                 # List of tile sizes to generate
+    ORIGINAL_PATH ='./database/'     # Path to the original images
+    TILE_PATH = './tile_database/'   # Destination path for tiles
+    TILE_SIZES = [1024, 512, 256, 128]   # List of tile sizes to generate
     
     for TILE_SIZE in TILE_SIZES:
 
