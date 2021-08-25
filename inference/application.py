@@ -1,3 +1,5 @@
+import sys
+sys.path.append('../tools')
 import os
 import sys
 import tkinter as tk
