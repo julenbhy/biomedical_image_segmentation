@@ -258,12 +258,13 @@ class Aplication():
 def main():
     global model
     model_name = 'tiled_unet_d40_t256.hdf5'
-    
+
     print('Loading model...')
     try:
-        model = tf.keras.models.load_model('./resources/'+model_name, compile=False)
+        model = tf.keras.models.load_model('../tissue_segmentation/trained_models/'+model_name, compile=False)
         #model.summary()
-    except:
+    except Exception:
+        print (Exception)
         sys.exit('ERROR: Model '+model_name+' not found')
 
 

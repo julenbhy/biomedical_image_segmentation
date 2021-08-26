@@ -1,7 +1,7 @@
 tissue_segmentation/database/
 tissue_segmentation/tile_database/
-cancer_segmentation/database/
-cancer_segmentation/tile_database/
+tumor_segmentation/database/
+tumor_segmentation/tile_database/
 wandb/
 __pycache__/
 .idea/
