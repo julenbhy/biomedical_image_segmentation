@@ -23,6 +23,7 @@ TILE_SIZE=256
 NUM_CLASSES=6
 
 model = None
+model_name = 'tiled_unet_d40_t256.hdf5'
 predicts = []         # each prediction is a dictionary containing 'filename' and 'image'
 input_path = None
 output_path = './exports'
@@ -256,8 +257,7 @@ class Aplication():
         return img
 
 def main():
-    global model
-    model_name = 'tiled_unet_d40_t256.hdf5'
+    global model, model_name
 
     print('Loading model...')
     try:
