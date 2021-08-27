@@ -43,7 +43,7 @@ Image examples:
 
 Masks must be single channel png images.
 
-## [tile_database:]
+## tile_database
 The database for containing the training images divided in tiles generated with tile_generation.py.
 
     .
