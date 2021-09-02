@@ -5,6 +5,7 @@ import sys
 import tkinter as tk
 import cv2
 import numpy as np
+import matplotlib.pyplot as plt
 from tkinter import *
 from tkinter import filedialog
 from tkinter.ttk import *
@@ -19,12 +20,11 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg#
 
 
-TILE_SIZE=256
+#TILE_SIZE=256
 NUM_CLASSES=6
 
 model = None
-default_model = 'tiled_unet_d40_t256.hdf5'
-predicts = []         # each prediction is a dictionary containing 'filename' and 'image'
+predictions = []         # each prediction is a dictionary containing 'filename' and 'image'
 input_path = None
 output_path = './exports'
 
@@ -37,10 +37,26 @@ class Aplication():
         cls.window.eval('tk::PlaceWindow . center')
         cls.window.iconphoto(True, tk.PhotoImage(file='resources/logo.png'))
         cls.window.geometry("400x400")
-        # cls.window.columnconfigure(0, weight=1)
-        # cls.window.rowconfigure(0, weight=1)
+        #cls.window.columnconfigure(0, weight=1)
+        #cls.window.rowconfigure(0, weight=1)
         cls.frame = None
+        
+        
+        
+        cls.TILE_SIZE = IntVar(cls.window)
+        cls.TILE_SIZE.set(256) # default value
+        cls.DOWNSAMPLE = IntVar(cls.window)
+        cls.DOWNSAMPLE.set(40) # default value
+        cls.CMAP = StringVar(cls.window)
+        cls.CMAP.set('viridis') # default value
+        cls.PLOT_HEATMAPS = BooleanVar(cls.window)
+        cls.PLOT_HEATMAPS.set(True)
+        cls.PLOT_INDIVIDUAL = BooleanVar(cls.window)
+        cls.PLOT_INDIVIDUAL.set(True)
 
+        
+        
+        
         cls.create_menu()
         cls.window.mainloop()
 
@@ -48,35 +64,28 @@ class Aplication():
 
         menubar = Menu(cls.window)
         cls.window.config(menu=menubar)
-
+        
         predict_menu = Menu(menubar)
         predict_menu.add_command(label="Predict single image", command=lambda: cls.single_predict_menu())
         predict_menu.add_command(label="Predict from directory", command=lambda: cls.multiple_predict_menu())
         predict_menu.add_separator()
         predict_menu.add_command(label="Exit", command=lambda: cls.window.quit())
-
+        
         menubar.add_cascade(label="Predict", menu=predict_menu)
-        menubar.add_cascade(label="Options", command=lambda: cls.set_options())
+        menubar.add_command(label="Options", command=lambda: cls.set_options_menu())
         menubar.add_command(label="Help", command=lambda: cls.help_popup())
         menubar.add_command(label="About...", command=lambda: cls.about_popup())
-        
-
+    
     def single_predict_menu(cls):
-
-        global FILETYPES
-
-        # Creating a row Frame Container
-        try:
-            cls.frame.destroy()
-        except:
-            pass
+        # Clear the frame
+        try: cls.frame.destroy()
+        except: pass
         cls.frame = LabelFrame(cls.window, text='Make single prediction')
-        cls.frame.grid(row=0, column=0, columnspan=3, pady=20)
+        cls.frame.pack()
 
         # Input image selection
         Label(cls.frame, text='Input image: ').grid(row=1, column=0, padx=5, pady=5)
-        Button(cls.frame, text='Select image',
-               command=lambda: cls.set_file_path()) \
+        Button(cls.frame, text='Select image', command=lambda: cls.set_file_path()) \
             .grid(row=1, column=1, padx=5, pady=5)
 
         # Output image
@@ -85,29 +94,24 @@ class Aplication():
         Label(cls.frame, text='Tumor Prediction: ').grid(row=3, column=0, padx=5, pady=5, sticky=W)
 
         # button Predict the result
-        Button(cls.frame, text='Predict',
-               command=lambda: cls.predict_single_image()) \
+        Button(cls.frame, text='Predict', command=lambda: cls.predict_single_image()) \
             .grid(row=4, columnspan=2, padx=5, pady=5)
 
         # button Export the result
-        Button(cls.frame, text='Export',
-               command=lambda: cls.export()) \
+        Button(cls.frame, text='Export', command=lambda: cls.export()) \
             .grid(row=5, columnspan=2, padx=5, pady=5)
 
     def multiple_predict_menu(cls):
 
-        # Creating a Frame Container
-        try:
-            cls.frame.destroy()
-        except:
-            pass
+        # Clear the frame
+        try: cls.frame.destroy()
+        except: pass
         cls.frame = LabelFrame(cls.window, text='Make multiple prediction')
-        cls.frame.grid(row=0, column=0, columnspan=3, pady=20)
+        cls.frame.pack()
 
         # Input directory
         Label(cls.frame, text='Select input directory: ').grid(row=1, column=0, padx=5, pady=5)
-        Button(cls.frame, text='Select path',
-               command=lambda: cls.set_dir_path(title='Select input directory', path_type='input')) \
+        Button(cls.frame, text='Select path', command=lambda: cls.set_dir_path(title='Select input directory', path_type='input')) \
             .grid(row=1, column=1, padx=5, pady=5)
         """
         # Output directory
@@ -117,20 +121,89 @@ class Aplication():
             .grid(row=2, column=1, padx=5, pady=5)
         """
         # Predict the result
-        Button(cls.frame, text='Predict',
-               command=lambda: cls.predict()) \
+        Button(cls.frame, text='Predict', command=lambda: cls.predict()) \
             .grid(row=3, columnspan=2, padx=5, pady=5)
 
         # Export the result
-        Button(cls.frame, text='Export',
-               command=lambda: cls.export()) \
+        Button(cls.frame, text='Export', command=lambda: cls.export()) \
             .grid(row=4, columnspan=2, padx=5, pady=5)
 
-    def select_model_menu(cls):
+    def set_options_menu(cls):
+        
+        # Set temporary variables to default
+        def set_default():
+            TILE_SIZE.set(256) # default value
+            DOWNSAMPLE.set(40) # default value
+            CMAP.set('viridis') # default value
+            PLOT_HEATMAPS.set(True)
+            PLOT_INDIVIDUAL.set(True)
+            
+        # Save temporary variables to class variables and load the model
+        def accept():
+            cls.TILE_SIZE.set(TILE_SIZE.get())
+            cls.DOWNSAMPLE.set(DOWNSAMPLE.get())
+            cls.CMAP.set(CMAP.get())
+            cls.PLOT_HEATMAPS.set(PLOT_HEATMAPS.get())
+            cls.PLOT_INDIVIDUAL.set(PLOT_INDIVIDUAL.get())
+            cls.load_model()
+            
+        
+        # Clear the frame
+        try: cls.frame.destroy()
+        except: pass
+        cls.frame = Frame(cls.window)
+        cls.frame.pack()
+        
+        # Declare temparary variables
+        TILE_SIZE = IntVar(cls.window)
+        DOWNSAMPLE = IntVar(cls.window)
+        CMAP = StringVar(cls.window)
+        PLOT_HEATMAPS = BooleanVar(cls.window)
+        PLOT_INDIVIDUAL = BooleanVar(cls.window)
+        set_default()
+        
+        
+        ##### IMAGE LOADING OPTIONS #####
+        load_frame = LabelFrame(cls.frame, text='Loading Options')
+        load_frame.pack()
+        
+        ##### IMAGE LOADING OPTIONS #####
+        resolutions = [40, 10]
+        Label(load_frame, text='Resolution Downsample: ').grid(row=0, column=0, padx=5, pady=5)
+        OptionMenu(load_frame, DOWNSAMPLE, 40, *resolutions).grid(row=0, column=1, padx=5, pady=5)
+        
+        tile_sizes = [128, 256, 512, 1024]
+        Label(load_frame, text='Tile size: (pixels)').grid(row=1, column=0, padx=5, pady=5)
+        OptionMenu(load_frame, TILE_SIZE, 256, *tile_sizes).grid(row=1, column=1, padx=5, pady=5)
+
+        
+        ##### PREDICTION PLOTING OPTIONS #####
+        plot_frame = LabelFrame(cls.frame, text='Plotting Options')
+        plot_frame.pack()
+        
+        Label(plot_frame, text='Color Map: ').grid(row=0, column=0, padx=5, pady=5)
+        cmap_box = ttk.Combobox(plot_frame, width = 20, textvariable=CMAP)
+        cmap_box.grid(row=0, column=1, padx=5, pady=5)
+        cmap_box['values'] = plt.colormaps()
+        #cmap_box.current(2)
+        
+        ttk.Checkbutton(plot_frame, text="Plot Confidence Heatmaps", variable=PLOT_HEATMAPS, onvalue=True, offvalue=False,).grid(row=2, column=0, padx=5, pady=5)
+        ttk.Checkbutton(plot_frame, text="Plot Individual Prediction", variable=PLOT_INDIVIDUAL, onvalue=True, offvalue=False,).grid(row=3, column=0, padx=5, pady=5)
+
+        button_frame = Frame(cls.frame)
+        button_frame.pack()
+        Button(button_frame, text='Set Default', command=lambda: set_default()).grid(row=0, column=0, padx=5, pady=5)
+        Button(button_frame, text='Accept', command=lambda: accept()).grid(row=0, column=1, padx=5, pady=5)
+        Button(button_frame, text='Actual Values', command=lambda: cls.print_variables()).grid(row=0, column=2, padx=5, pady=5)
+        
+    def load_model(cls):
         global model
-        input_path = filedialog.askopenfilename(title='Select prediction model', filetypes=[('model', '.hdf5')], initialdir='../tissue_segmentation/trained_models/')
-        print('\nLoading model...')
-        model = tf.keras.models.load_model('../tissue_segmentation/trained_models/'+default_model, compile=False)
+        
+        model_name = 'tiled_unet_d'+str(cls.DOWNSAMPLE.get())+'_t'+str(cls.TILE_SIZE.get())+'.hdf5'
+        path = '../tissue_segmentation/trained_models/'
+        print('\nLoading model', model_name)
+        try: model = tf.keras.models.load_model(path+model_name, compile=False); print('Model loaded')
+        except Exception: print('ERROR: Model '+model_name+' not found. Try selecting other options')
 
     def help_popup(cls):
         tk.messagebox.showinfo(title='Help', message='On development')
@@ -139,7 +212,7 @@ class Aplication():
         popup = Tk()
         popup.wm_title('About...')
         popup.eval('tk::PlaceWindow . center')
-
+        
         Label(popup, text='Authors:'
                               '\n\tMarcos Jesus Arauzo Bravo: mararabra@yahoo.co.uk'
                               '\n\n\tJulen Bohoyo Bengoetxea: julenbhy@gmail.com')\
@@ -181,7 +254,7 @@ class Aplication():
 
     def predict_single_image(cls):
         # from tensorflow.keras.preprocessing.image import array_to_img
-        global model, TILE_SIZE, input_path, predicts
+        global model, input_path, predictions
         
         print('Predicting: ', input_path)
             
@@ -197,7 +270,7 @@ class Aplication():
         # predict the mask
         smooth_prediction = predict_img_with_smooth_windowing(
             img,
-            window_size=TILE_SIZE,
+            window_size=cls.TILE_SIZE,
             subdivisions=2,  # Minimal amount of overlap for windowing. Must be an even number.
             nb_classes=NUM_CLASSES,
             pred_func=(
@@ -217,7 +290,7 @@ class Aplication():
         canvas_for_image.image = ImageTk.PhotoImage(colored_pil.resize((300, 300), Image.ANTIALIAS))
         canvas_for_image.create_image(0, 0, image=canvas_for_image.image, anchor='nw')
 
-        predicts.append({'filename': input_path.split('/')[-1], 'image': prediction})
+        predictions.append({'filename': input_path.split('/')[-1], 'image': prediction})
 
     def predict_multiple_image(cls):
         acceptable_image_formats = [".jpg"]
@@ -226,7 +299,7 @@ class Aplication():
                 print('Predicting: ', input_path + dir_entry)
                 prediction = None
                 # prediction = model.predict(get_image(input_path+dir_entry))
-                predicts.append({'filename': dir_entry, 'image': prediction})
+                predictions.append({'filename': dir_entry, 'image': prediction})
                     
     def export(cls):
         """
@@ -237,22 +310,21 @@ class Aplication():
         cls.set_dir_path(title='Select output directory', path_type='output')
         for img in predicts:
             print('Exporting: '+output_path+img['filename'])
-            # np to img
-            # save_img(img['filename'], img['image'])
 
-    def set_options(cls):
-        pass
+    def print_variables(cls):
+        print('\nResolution', cls.DOWNSAMPLE.get())
+        print('Tile Size', cls.TILE_SIZE.get())
+        print('Cmap', cls.CMAP.get())
+        print('Plot Heatmap', cls.PLOT_HEATMAPS.get())
+        print('Plot Individual', cls.PLOT_INDIVIDUAL.get())
         
 def main():
-    global model, default_model
+    global model
 
-    print('Loading model...')
-    try:
-        model = tf.keras.models.load_model('../tissue_segmentation/trained_models/'+default_model, compile=False)
-        #model.summary()
-    except Exception:
-        print (Exception)
-        sys.exit('ERROR: Model '+model_name+' not found')
+    default_model = 'tiled_unet_d40_t256.hdf5'
+    print('Loading model', default_model)
+    try: model = tf.keras.models.load_model('../tissue_segmentation/trained_models/'+default_model, compile=False)
+    except Exception: sys.exit('ERROR: Model '+default_model+' not found')
 
 
     mi_app = Aplication()
