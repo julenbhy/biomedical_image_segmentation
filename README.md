@@ -3,6 +3,9 @@ CNN developed on Tensorflow and Keras for colon adenocarcinoma image segmentatio
 
 The aim of this CNN is to perform image segmentation of input colon adenocarcinoma based on QuPath annotations.
 
+# abstract
+Colon adenocarcinoma is one of the cancer types with the highest incidence in the population. Since early diagnosis and treatment are essential to achieve a higher survival rate, it is necessary to implement screening programs that allow periodic analysis of the population segments at the highest risk of contracting it. One of the most common diagnostic methods used by health systems is the analysis of histological samples. The visual analysis of such samples requires a great deal of time on the part of experts. Therefore, it is convenient to develop a tool that speeds up this work for pathologists. Since this is a computer vision task, and that in recent years artificial intelligence has shown great potential in this field, it has been decided to use artificial neural networks in order to develop this tool. However, one of the main obstacles usually found in this kind of biomedical field developments is the lack of quality data needed to train the neural networks. For this reason, multiple techniques have been applied to help alleviate this drawback, allowing a reasonably accurate system to be obtained from a limited set of images.
+
 
 ## AUTHORS:
 ```Marcos Jesus Arauzo Bravo``` email: mararabra@yahoo.co.uk
