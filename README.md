@@ -36,8 +36,6 @@ The project is divided into two subprojects. On the one hand, a neural network r
 
 ```Julen Bohoyo Bengoetxea``` email: julenbhy@gmail.com
 
-                                     julen.bohoyo@estudiants.urv.cat
-
 
 ## [database structure:](https://github.com/julenbhy/biomedical_segmentation/tree/master/tissue_segmentation/database)
 The database containing the training images. Requieres the following format in order to use keras.flow_from_directory() function:
