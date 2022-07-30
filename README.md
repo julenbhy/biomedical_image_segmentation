@@ -34,7 +34,8 @@ The project is divided into two subprojects. On the one hand, a neural network r
 ## AUTHORS:
 ```Marcos Jesus Arauzo Bravo``` email: mararabra@yahoo.co.uk
 
-```Julen Bohoyo Bengoetxea``` email: julen.bohoyo@estudiants.urv.cat
+```Julen Bohoyo Bengoetxea``` email: julenbhy@gmail.com
+                                     julen.bohoyo@estudiants.urv.cat
 
 
 ## [database structure:](https://github.com/julenbhy/biomedical_segmentation/tree/master/tissue_segmentation/database)
