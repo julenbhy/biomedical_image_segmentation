@@ -35,7 +35,7 @@ There are two databases, one in the tissue_segmentation and other for tumor_segm
 
 The directory structure is already created at this project so that only the images have to be copied.
 
-Image examples:
+Tissue image example:
 
 ```images:```
 <img width="200" alt="portfolio_view" src="https://github.com/julenbhy/biomedical_segmentation/blob/master/tissue_segmentation/database/images/img/10-1960%20HEN.jpg"> 
@@ -43,6 +43,15 @@ Image examples:
 <img width="200" alt="portfolio_view" src="https://github.com/julenbhy/biomedical_segmentation/blob/master/tissue_segmentation/database/masks/img/10-1960%20HEN.png">
 
 ```Pixel values:``` 0 = backgroud, 225 = mucosa, 178 = linfocitos, 96 = submucosa, 131 = muscular, 105 = subserosa
+
+Tumor image example:
+
+```images:```
+<img width="200" alt="portfolio_view" src="https://github.com/julenbhy/biomedical_segmentation/blob/master/tissue_segmentation/database/images/img/.jpg"> 
+```masks:```
+<img width="200" alt="portfolio_view" src="https://github.com/julenbhy/biomedical_segmentation/blob/master/tissue_segmentation/database/masks/img/.png">
+
+```Pixel values:``` 0 = backgroud, 225 = tumor
 
 Masks must be single channel png images.
 
