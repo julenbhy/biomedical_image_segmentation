@@ -13,8 +13,8 @@ Colon adenocarcinoma is one of the cancer types with the highest incidence in th
 ```Julen Bohoyo Bengoetxea``` email: julen.bohoyo@estudiants.urv.cat
 
 
-## [database:](https://github.com/julenbhy/biomedical_segmentation/tree/master/tissue_segmentation/database)
-The database for containing the training images. Requieres the following format:
+## [database structure:](https://github.com/julenbhy/biomedical_segmentation/tree/master/tissue_segmentation/database)
+The database containing the training images. Requieres the following format in order to use keras.flow_from_directory() function:
 There are two databases, one in the tissue_segmentation and other for tumor_segmentation.
 
     .
