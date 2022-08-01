@@ -75,7 +75,7 @@ Tumor image example:
 ```masks:```
 <img width="200" alt="portfolio_view" src="https://github.com/julenbhy/biomedical_segmentation/blob/master/tumor_segmentation/database/masks/img/10-2266 HET.png">
 
-```Pixel values:``` 0 = backgroud, 225 = tumor
+```Pixel values:``` 0 = backgroud, 59 = tumor
 
 Masks must be single channel png images.
 
