@@ -68,6 +68,7 @@ Tissue image example:
 
 ```Pixel values:``` 0 = backgroud, 225 = mucosa, 178 = linfocitos, 96 = submucosa, 131 = muscular, 105 = subserosa
 
+
 Tumor image example:
 
 ```images:```
